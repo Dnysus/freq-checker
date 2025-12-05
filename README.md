@@ -1,4 +1,4 @@
-# CSV Duplicate Counter
+# freq-checker (CSV Duplicate Counter)
 
 A Python script that counts the frequency of values in a CSV column and exports the results.
 

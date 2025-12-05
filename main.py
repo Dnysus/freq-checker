@@ -1,14 +1,46 @@
+"""Script to find and export duplicate values from a CSV file."""
+import argparse
+
 import pandas as pd
 
-df_csv = pd.read_csv(r"path of file.csv")
 
-pd.set_option('display.max_rows', df_csv.shape[0])
-pd.set_option('display.max_columns', None)
+def find_duplicates(input_path: str, column: str, output_path: str | None = None) -> pd.DataFrame:
+    """Find values that appear more than once in the specified column."""
+    df = pd.read_csv(input_path)
 
-dups = df_csv.pivot_table(index = ['Column name'], aggfunc = 'size')
+    if column not in df.columns:
+        raise ValueError(f"Column '{column}' not found. Available: {list(df.columns)}")
+
+    # Count occurrences and filter to only duplicates (count > 1)
+    counts = df[column].value_counts()
+    duplicates = counts[counts > 1].reset_index()
+    duplicates.columns = [column, 'count']
+
+    print(f"Found {len(duplicates)} values with duplicates:")
+    print(duplicates.to_string(index=False))
+
+    if output_path:
+        duplicates.to_csv(output_path, index=False)
+        print(f"\nSaved to: {output_path}")
+
+    return duplicates
 
 
-print(dups)
+def main():
+    parser = argparse.ArgumentParser(description="Find duplicate values in a CSV column")
+    parser.add_argument("input", help="Path to input CSV file")
+    parser.add_argument("column", help="Column name to check for duplicates")
+    parser.add_argument("-o", "--output", help="Path to save results (optional)")
+
+    args = parser.parse_args()
+
+    try:
+        find_duplicates(args.input, args.column, args.output)
+    except FileNotFoundError:
+        print(f"Error: File not found: {args.input}")
+    except ValueError as e:
+        print(f"Error: {e}")
 
 
-dups.to_csv(r"path where to save csv\name for file.csv", index = True)
+if __name__ == "__main__":
+    main()

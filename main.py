@@ -24,7 +24,8 @@ def find_duplicates(
         return pd.DataFrame()
 
     if column not in df.columns:
-        print(f"Error: Column '{column}' not found. Available: {list(df.columns)}")
+        print(
+            f"Error: Column '{column}' not found. Available: {list(df.columns)}")
         return pd.DataFrame()
 
     # Normalize data
@@ -73,7 +74,7 @@ def generate_plot(duplicates: pd.DataFrame, column: str, output_path: str | None
     # Save plot if output path is provided, otherwise show it
     if output_path:
         plot_path = output_path.replace('.csv', '.png')
-        if plot_path == output_path: # fallback if no extension
+        if plot_path == output_path:  # fallback if no extension
             plot_path += '.png'
         plt.savefig(plot_path)
         print(f"Saved plot to: {plot_path}")
@@ -88,7 +89,8 @@ def get_interactive_args():
     input_path = input("Enter path to input CSV file: ").strip()
     column = input("Enter column name to check: ").strip()
 
-    output_path = input("Enter path to save results (optional, press Enter to skip): ").strip()
+    output_path = input(
+        "Enter path to save results (optional, press Enter to skip): ").strip()
     if not output_path:
         output_path = None
 
@@ -100,13 +102,19 @@ def get_interactive_args():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Find duplicate values in a CSV column")
+    parser = argparse.ArgumentParser(
+        description="Find duplicate values in a CSV column")
     parser.add_argument("input", nargs='?', help="Path to input CSV file")
-    parser.add_argument("column", nargs='?', help="Column name to check for duplicates")
-    parser.add_argument("-o", "--output", help="Path to save results (optional)")
-    parser.add_argument("--ignore-case", action="store_true", help="Ignore case when comparing values")
-    parser.add_argument("--trim", action="store_true", help="Trim whitespace from values")
-    parser.add_argument("--plot", action="store_true", help="Generate a bar chart of top duplicates")
+    parser.add_argument("column", nargs='?',
+                        help="Column name to check for duplicates")
+    parser.add_argument(
+        "-o", "--output", help="Path to save results (optional)")
+    parser.add_argument("--ignore-case", action="store_true",
+                        help="Ignore case when comparing values")
+    parser.add_argument("--trim", action="store_true",
+                        help="Trim whitespace from values")
+    parser.add_argument("--plot", action="store_true",
+                        help="Generate a bar chart of top duplicates")
 
     args = parser.parse_args()
 

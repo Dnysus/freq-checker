@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 
 def find_duplicates(
-    input_path: str, 
-    column: str, 
+    input_path: str,
+    column: str,
     output_path: str | None = None,
     ignore_case: bool = False,
     trim: bool = False,
@@ -29,10 +29,10 @@ def find_duplicates(
 
     # Normalize data
     series = df[column].astype(str)
-    
+
     if trim:
         series = series.str.strip()
-    
+
     if ignore_case:
         series = series.str.lower()
 
@@ -61,7 +61,7 @@ def find_duplicates(
 def generate_plot(duplicates: pd.DataFrame, column: str, output_path: str | None):
     """Generate a bar chart of the top 10 duplicates."""
     top_10 = duplicates.head(10)
-    
+
     plt.figure(figsize=(10, 6))
     plt.bar(top_10[column], top_10['count'], color='skyblue')
     plt.xlabel(column)
@@ -87,15 +87,15 @@ def get_interactive_args():
     print("--- CSV Duplicate Checker ---")
     input_path = input("Enter path to input CSV file: ").strip()
     column = input("Enter column name to check: ").strip()
-    
+
     output_path = input("Enter path to save results (optional, press Enter to skip): ").strip()
     if not output_path:
         output_path = None
-        
+
     ignore_case_in = input("Ignore case? (y/n): ").lower().strip() == 'y'
     trim_in = input("Trim whitespace? (y/n): ").lower().strip() == 'y'
     plot_in = input("Generate plot? (y/n): ").lower().strip() == 'y'
-    
+
     return input_path, column, output_path, ignore_case_in, trim_in, plot_in
 
 

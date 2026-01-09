@@ -9,25 +9,27 @@ A Python script that counts the frequency of values in a CSV column and exports 
 - Displays the frequency counts
 - Saves the results to a new CSV file
 
-## Requirements
-
-```
-pandas
-```
-
 ## Usage
 
-1. Open `main.py` and update the following:
+Run the script from the command line:
 
-   | Placeholder | Replace With |
-   |-------------|--------------|
-   | `"path of file.csv"` | Path to your input CSV |
-   | `"Column name"` | The column to count duplicates in |
-   | `"path where to save csv\name for file.csv"` | Path for the output CSV |
+```bash
+python main.py "path/to/file.csv" "Column name"
+```
 
-2. Run the script:
+Optional arguments:
+- `-o`, `--output`: Path to save the output CSV.
+
+Example:
+```bash
+python main.py data.csv "Email" -o duplicates.csv
+```
+
+## Installation
+
+1. Install dependencies:
    ```bash
-   python main.py
+   pip install -r requirements.txt
    ```
 
 ## Example Output

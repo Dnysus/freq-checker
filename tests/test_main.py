@@ -1,4 +1,3 @@
-from main import find_duplicates, get_interactive_args
 import os
 import sys
 import pandas as pd
@@ -8,6 +7,7 @@ from io import StringIO
 
 # Add parent directory to path to import main
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from main import find_duplicates, get_interactive_args
 
 
 @pytest.fixture

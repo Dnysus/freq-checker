@@ -1,2 +1,6 @@
 pandas
 matplotlib
+pytest
+pytest-mock
+autopep8
+pylint

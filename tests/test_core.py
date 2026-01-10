@@ -29,6 +29,28 @@ def test_find_duplicates_normalization(sample_df):
     assert results['Name'].iloc[0] == 'john doe'
     assert results['count'].iloc[0] == 3
 
+def test_find_duplicates_multi_column(sample_df):
+    """Test finding duplicates based on multiple columns."""
+    # Data Recap:
+    # 0: John Doe, New York
+    # 1: Jane Smith, Chicago
+    # 2: john doe, New York (matches 0 if normalized Name)
+    # 3: Bob Jones, Boston
+    # 4: John Doe ,  New York  (matches 0 if trim)
+    # 5: Alice, Chicago
+    
+    # Let's test exact match on specific added row to ensure multi-col works
+    # Add a row that duplicates row 1 exactly
+    df = pd.concat([sample_df, pd.DataFrame([{"Name": "Jane Smith", "Email": "x", "City": "Chicago"}])], ignore_index=True)
+    
+    # Search on Name + City
+    results = find_duplicates(df, ["Name", "City"])
+    
+    assert len(results) == 1
+    assert results['Name'].iloc[0] == "Jane Smith"
+    assert results['City'].iloc[0] == "Chicago"
+    assert results['count'].iloc[0] == 2
+
 def test_column_not_found(sample_df):
     with pytest.raises(ValueError):
         find_duplicates(sample_df, "NonExistent")

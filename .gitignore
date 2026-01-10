@@ -45,3 +45,5 @@ Thumbs.db
 # Output
 results.csv
 results.png
+*.xlsx
+*.html

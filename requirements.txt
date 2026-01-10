@@ -7,3 +7,4 @@ pylint
 thefuzz
 python-levenshtein
 jellyfish
+openpyxl

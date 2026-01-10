@@ -1,15 +1,17 @@
-"""Script to find and export duplicate values from a CSV file."""
+"""Script to find and export duplicate values from a CSV or Excel file."""
 import argparse
 import sys
 import pandas as pd
 from freq_checker.core import find_duplicates
 from freq_checker.visualize import generate_plot
 from freq_checker.fuzzy import find_fuzzy_duplicates, find_phonetic_duplicates
+from freq_checker.io import load_data, save_data
+from freq_checker.report import generate_html_report
 
 def get_interactive_args():
     """Prompt user for input if no arguments are provided."""
-    print("--- CSV Duplicate Checker ---")
-    input_path = input("Enter path to input CSV file: ").strip()
+    print("--- CSV/Excel Duplicate Checker ---")
+    input_path = input("Enter path to input file (csv/xlsx): ").strip()
     column = input("Enter column name to check: ").strip()
     
     output_path = input("Enter path to save results (optional, press Enter to skip): ").strip()
@@ -19,16 +21,14 @@ def get_interactive_args():
     ignore_case_in = input("Ignore case? (y/n): ").lower().strip() == 'y'
     trim_in = input("Trim whitespace? (y/n): ").lower().strip() == 'y'
     plot_in = input("Generate plot? (y/n): ").lower().strip() == 'y'
+    report_in = input("Generate HTML report? (y/n): ").lower().strip() == 'y'
     
-    # Simple interactive mode doesn't support fuzzy yet to keep it simple, 
-    # or we could add it. Let's keep it simple for now.
-    
-    return input_path, column, output_path, ignore_case_in, trim_in, plot_in
+    return input_path, column, output_path, ignore_case_in, trim_in, plot_in, report_in
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Find duplicate values in a CSV column")
-    parser.add_argument("input", nargs='?', help="Path to input CSV file")
+    parser = argparse.ArgumentParser(description="Find duplicate values in a CSV/Excel column")
+    parser.add_argument("input", nargs='?', help="Path to input file")
     parser.add_argument("column", nargs='?', help="Column name to check for duplicates")
     parser.add_argument("-o", "--output", help="Path to save results (optional)")
     
@@ -42,12 +42,13 @@ def main():
     parser.add_argument("--phonetic", action="store_true", help="Use phonetic matching (Soundex/Metaphone)")
     
     parser.add_argument("--plot", action="store_true", help="Generate a bar chart")
+    parser.add_argument("--report", action="store_true", help="Generate HTML report")
 
     args = parser.parse_args()
 
     # Interactive mode if arguments are missing
     if args.input is None or args.column is None:
-        input_path, column, output_path, ignore_case, trim, plot = get_interactive_args()
+        input_path, column, output_path, ignore_case, trim, plot, report = get_interactive_args()
         # Defaults for interactive
         fuzzy = False
         threshold = 90
@@ -59,17 +60,18 @@ def main():
         ignore_case = args.ignore_case
         trim = args.trim
         plot = args.plot
+        report = args.report
         fuzzy = args.fuzzy
         threshold = args.threshold
         phonetic = args.phonetic
 
     try:
-        df = pd.read_csv(input_path)
+        df = load_data(input_path)
     except FileNotFoundError:
         print(f"Error: File not found: {input_path}")
         return
     except Exception as e:
-        print(f"Error reading CSV: {e}")
+        print(f"Error reading file: {e}")
         return
 
     # 1. Exact Duplicates
@@ -88,6 +90,9 @@ def main():
             
             if plot:
                 generate_plot(results, column, output_path)
+            
+            if report and output_path:
+                generate_html_report(results, column, output_path)
 
     # 2. Fuzzy Duplicates
     elif fuzzy:
@@ -109,9 +114,9 @@ def main():
             print("Found phonetic duplicates:")
             print(results.to_string(index=False))
 
-    # Save logic common for all
+    # Save results
     if output_path and not results.empty:
-        results.to_csv(output_path, index=False)
+        save_data(results, output_path)
         print(f"\nSaved results to: {output_path}")
 
 if __name__ == "__main__":

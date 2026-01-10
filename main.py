@@ -74,40 +74,53 @@ def main():
         print(f"Error reading file: {e}")
         return
 
+    # Parse columns (allow comma separation)
+    columns = [c.strip() for c in column.split(',')]
+    
     # 1. Exact Duplicates
     if not fuzzy and not phonetic:
         try:
-            results = find_duplicates(df, column, ignore_case, trim)
+            results = find_duplicates(df, columns, ignore_case, trim)
         except ValueError as e:
             print(f"Error: {e}")
             return
             
         if results.empty:
-            print(f"No duplicates found in column '{column}'.")
+            print(f"No duplicates found in columns '{column}'.")
         else:
             print(f"Found {len(results)} values with duplicates:")
             print(results.to_string(index=False))
             
             if plot:
-                generate_plot(results, column, output_path)
+                generate_plot(results, columns, output_path)
             
             if report and output_path:
+                # Basic report might need tweaking for multi-col, but dataframe to_html should work fine
                 generate_html_report(results, column, output_path)
 
-    # 2. Fuzzy Duplicates
+    # 2. Fuzzy Duplicates (Single column only for now)
     elif fuzzy:
-        print(f"Running fuzzy matching on '{column}' with threshold {threshold}...")
-        results = find_fuzzy_duplicates(df, column, threshold)
+        if len(columns) > 1:
+            print("Error: Fuzzy matching currently supports only one column at a time.")
+            return
+            
+        print(f"Running fuzzy matching on '{columns[0]}' with threshold {threshold}...")
+        results = find_fuzzy_duplicates(df, columns[0], threshold)
         if results.empty:
             print("No fuzzy duplicates found.")
         else:
             print(f"Found {len(results)} potential matches:")
             print(results.to_string(index=False))
 
-    # 3. Phonetic Duplicates
+    # 3. Phonetic Duplicates (Single column only for now)
     elif phonetic:
-        print(f"Running phonetic matching on '{column}'...")
-        results = find_phonetic_duplicates(df, column)
+        if len(columns) > 1:
+            print("Error: Phonetic matching currently supports only one column at a time.")
+            return
+
+        print(f"Running phonetic matching on '{columns[0]}'...")
+        results = find_phonetic_duplicates(df, columns[0])
+
         if results.empty:
             print("No phonetic duplicates found.")
         else:

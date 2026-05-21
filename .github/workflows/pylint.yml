@@ -30,7 +30,7 @@ jobs:
         pylint $(git ls-files '*.py') > pylint_report.txt 2>&1 || true
         cat pylint_report.txt
     - name: Comment on PR
-      uses: marocchino/sticky-pull-request-comment@v2
+      uses: marocchino/sticky-pull-request-comment@v3
       with:
         header: pylint-report
         path: pylint_report.txt
